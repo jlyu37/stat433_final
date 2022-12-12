@@ -267,7 +267,7 @@ server <- function(input, output) {
         geom_hline(yintercept=mean_y, linetype="dashed", color = "red") +
         xlab("Regions") +
         theme(axis.text.x = element_text(angle = 60, hjust=1)) +
-        labs(title = paste("National average hourly wage is", mean(a1$mean)), 
+        labs(title = paste("National average hourly wage is", mean_y), 
              subtitle = paste("mean wage in 20", as.character(input$bins), sep=""))
   })
   
