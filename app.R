@@ -154,18 +154,18 @@ ui <- fluidPage(
                
                tabsetPanel(
                  tabPanel(
-                   title = "Mapping",
+                   title = "US Mapping",
                    plotOutput(outputId = "distPlot")
                  ),
                  tabPanel(
-                   title = "Graph",
+                   title = "US Graph",
                   #  sidebarPanel(
                   #    selectInput("select", h3("Select box"), choices = list("Map" = 1, "Graph" = 2), selected = 1)
                   #  ),
                    plotOutput(outputId = "distPlot3")
                  ),
                  tabPanel(
-                   title = "State",
+                   title = "State Major",
                    #  sidebarPanel(
                    #    selectInput("select", h3("Select box"), choices = list("Map" = 1, "Graph" = 2), selected = 1)
                    #  ),
@@ -173,6 +173,16 @@ ui <- fluidPage(
                    
                    #)
                    plotOutput(outputId = "distPlot4")
+                 ),
+                 tabPanel(
+                   title = "State detail",
+                   #  sidebarPanel(
+                   #    selectInput("select", h3("Select box"), choices = list("Map" = 1, "Graph" = 2), selected = 1)
+                   #  ),
+                   #sidebarPanel(
+                   
+                   #)
+                   plotOutput(outputId = "distPlot7")
                  )
                )
              ) # mainPanel
@@ -353,6 +363,35 @@ server <- function(input, output) {
       labs(title = paste("Average hourly wage in", temp_major), subtitle = paste("in 20", temp_y, sep = "")) +
       xlab("Different States") +
       ylab("Average hour wage")
+  })
+  output$distPlot7 <- renderPlot({
+    temp_state = result$STATE[as.numeric(input$select_s)]
+    temp_y = input$bins
+    temp = my_data_17_d %>%
+      filter(STATE == temp_state)
+    if (temp_y == 18){
+      temp = my_data_18_d %>%
+        filter(STATE == temp_state)
+    } else if (temp_y == 19){
+      temp = my_data_19_d %>%
+        filter(area_title == temp_state) %>%
+        rename(OCC_TITLE = occ_title, H_MEAN = h_mean, TOT_EMP = tot_emp)
+    } else if (temp_y == 20){
+      temp = my_data_20_d %>%
+        filter(AREA_TITLE == temp_state)
+    } else if (temp_y == 21){
+      temp = my_data_21_d %>%
+        filter(AREA_TITLE == temp_state)
+    }
+    mean_y = year_mean(input$bins)
+    
+    temp %>%
+      ggplot() +
+      geom_vline(xintercept = mean_y, linetype = "dotted", color = "red") +
+      geom_step(aes(x = H_MEAN, y =TOT_EMP)) +
+      labs(title = paste("Average hourly wage in", temp_state), subtitle = paste("in 20", temp_y, sep = "")) +
+      ylab("Total emplement number") +
+      xlab("Average hour wage")
   })
 }
 
